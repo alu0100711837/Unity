@@ -12,8 +12,13 @@ public class WeaponBehaviour : MonoBehaviour {
 	public float timeBetweenFire = 0.3f;	//Cadencia de disparo
 	private float timeUntilNextFire;
 	private Vector3 bombPosition;
+
+	private AudioSource shotSound;
+
+
 	void Start () {
 		Cursor.lockState = CursorLockMode.Locked;	//Ocultamos el cursor
+		shotSound = this.GetComponent<AudioSource>();
 	}
 	
 	// Update is called once per frame
@@ -27,13 +32,14 @@ public class WeaponBehaviour : MonoBehaviour {
 		transform.Rotate(0f, Input.GetAxis("Mouse X") * speed, 0f, Space.World);
 		transform.Rotate(Input.GetAxis("Mouse Y") * speed,  0f, 0, Space.Self);
 	}
-
+  
 	void Shoot() {
 		if (Input.GetMouseButton(0) && timeUntilNextFire <= 0) {
 			Transform b = Instantiate(projectile, projectileSpawn.transform.position, projectileSpawn.transform.rotation);
 			Vector3 forceDirection = projectileSpawn.transform.position - this.transform.position;
 			Vector3 desviation = new Vector3(Random.Range(-error, error), Random.Range(-error, error), Random.Range(-error, error));
 			b.GetComponent<Rigidbody>().AddForce((forceDirection.normalized + desviation) * 400.0f);
+			shotSound.Play();
 			timeUntilNextFire = timeBetweenFire;
 		}
 		timeUntilNextFire -= Time.deltaTime;
