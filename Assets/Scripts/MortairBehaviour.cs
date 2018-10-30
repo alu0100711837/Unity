@@ -12,6 +12,9 @@ public class MortairBehaviour : MonoBehaviour {
 	private float timeUntilNextFire;
 	private Vector3 bombPosition;
 
+	public List<GameObject> fireSpawners;
+	public Transform fireEffect;
+
 	private AudioSource shotSound;
 	void Start () {
 		Cursor.lockState = CursorLockMode.Locked;	//Ocultamos el cursor
@@ -46,13 +49,14 @@ public class MortairBehaviour : MonoBehaviour {
 		for (int i = 0; i < 5; i++) {
 			Vector3 desviation = new Vector3(Random.Range(-error, error), 0, Random.Range(-error, error));
 			Transform b = Instantiate(projectile, projectileSpawn.transform.position + desviation, projectileSpawn.transform.rotation);
-			b.GetComponent<Rigidbody>().AddForce(new Vector3(0, -500000.0f, 0));
+			b.GetComponent<Rigidbody>().AddForce(new Vector3(0, -200000.0f, 0));
 			yield return new WaitForSeconds(0.5f);
 		}
 	}
 
 	IEnumerator FakeShoot() {
 		for (int i = 0; i < 5; i++) {
+			Instantiate(fireEffect, fireSpawners[i].transform.position, fireSpawners[i].transform.rotation);
 			shotSound.Play();
 			yield return new WaitForSeconds(0.5f);
 		}
