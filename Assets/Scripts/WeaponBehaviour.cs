@@ -4,30 +4,32 @@ using UnityEngine;
 
 public class WeaponBehaviour : MonoBehaviour {
 
-	// Use this for initialization
-	float speed = 2.0f;		//Sensibilidad
+	//Sensibilidad de movimiento
+	float speed = 2.0f;
+	float timeUntilNextFire;
+	Vector3 bombPosition;
+	//Precisión del arma. Si es 0 todas las balas impactan exactamente en el mismo sitio
 	public float error = 0.3f;
 	public Transform projectile;
 	public GameObject projectileSpawn;
-	public float timeBetweenFire = 0.3f;	//Cadencia de disparo
-	private float timeUntilNextFire;
-	private Vector3 bombPosition;
+	//Cadencia de tiro. Cuanto más bajo sea el número más rápido dispara el arma
+	public float timeBetweenFire = 0.3f;
 
 	private AudioSource shotSound;
 
 
 	void Start () {
-		Cursor.lockState = CursorLockMode.Locked;	//Ocultamos el cursor
+		//Ocultamos el cursor e inicializamos el componente de audio solo una vez
+		Cursor.lockState = CursorLockMode.Locked;
 		shotSound = this.GetComponent<AudioSource>();
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		Move();
 		Shoot();
 	}
 
-//Muy importante tener en cuenta el sistema de referencia de cada eje.
+//Muy importante tener en cuenta el sistema de referencia de cada eje. Explicado con detalle en el blog
 	void Move() {
 		transform.Rotate(0f, Input.GetAxis("Mouse X") * speed, 0f, Space.World);
 		transform.Rotate(Input.GetAxis("Mouse Y") * speed,  0f, 0, Space.Self);
@@ -35,6 +37,7 @@ public class WeaponBehaviour : MonoBehaviour {
   
 	void Shoot() {
 		if (Input.GetMouseButton(0) && timeUntilNextFire <= 0) {
+			//Instanciamos el proyectil. Calculamos y le aplicamos fuerza y desviación.
 			Transform b = Instantiate(projectile, projectileSpawn.transform.position, projectileSpawn.transform.rotation);
 			Vector3 forceDirection = projectileSpawn.transform.position - this.transform.position;
 			Vector3 desviation = new Vector3(Random.Range(-error, error), Random.Range(-error, error), Random.Range(-error, error));
